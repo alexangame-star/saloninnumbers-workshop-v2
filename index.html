@@ -1,0 +1,1079 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Салон на цифрах — 3-денний практикум</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700;1,900&family=Unbounded:wght@300;400;500;600;700;800;900&family=Manrope:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #FDF2F0;
+  --bg-card: #FFFFFF;
+  --bg-card-hover: #FFF7F5;
+  --camel: #B8845E;
+  --camel-light: #C4956A;
+  --camel-dark: #A67A52;
+  --rose: #D4467A;
+  --rose-light: #E8789F;
+  --rose-glow: rgba(212, 70, 122, 0.1);
+  --cream: #1A1A1A;
+  --white: #FFFFFF;
+  --gray: #6B6360;
+  --gray-dark: #4A4240;
+  --border: rgba(196, 149, 106, 0.18);
+  --bg-pink-soft: #F9E8E4;
+  --bg-pink-deep: #F3D5CF;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'Manrope', sans-serif;
+  background: var(--bg);
+  color: var(--cream);
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+::selection {
+  background: var(--rose);
+  color: white;
+}
+
+/* ===== ANIMATIONS ===== */
+@keyframes fadeUp { from { opacity:0; transform:translateY(50px); } to { opacity:1; transform:translateY(0); } }
+@keyframes fadeIn { from { opacity:0; } to { opacity:1; } }
+@keyframes float { 0%,100%{ transform:translateY(0) rotate(0deg); } 50%{ transform:translateY(-12px) rotate(2deg); } }
+@keyframes floatAlt { 0%,100%{ transform:translateY(0) rotate(0deg); } 50%{ transform:translateY(-8px) rotate(-3deg); } }
+@keyframes pulse { 0%,100%{ box-shadow:0 0 0 0 rgba(212,70,122,0.4); } 50%{ box-shadow:0 0 0 20px rgba(212,70,122,0); } }
+@keyframes marquee { 0%{ transform:translateX(0); } 100%{ transform:translateX(-50%); } }
+@keyframes spin { from { transform:rotate(0deg); } to { transform:rotate(360deg); } }
+@keyframes shimmer { 0%{ background-position:-200% center; } 100%{ background-position:200% center; } }
+@keyframes scaleIn { from { opacity:0; transform:scale(0.85); } to { opacity:1; transform:scale(1); } }
+@keyframes wiggle { 0%,100%{ transform:rotate(-3deg); } 50%{ transform:rotate(3deg); } }
+
+.anim { opacity:0; }
+.anim.vis { animation: fadeUp 0.7s ease forwards; }
+.anim-d1 { animation-delay:.12s; }
+.anim-d2 { animation-delay:.24s; }
+.anim-d3 { animation-delay:.36s; }
+.anim-d4 { animation-delay:.48s; }
+
+/* ===== LAYOUT ===== */
+.container { max-width:1060px; margin:0 auto; padding:0 24px; }
+
+/* ===== NAV ===== */
+.nav {
+  position:fixed; top:0; left:0; right:0; z-index:100;
+  background:rgba(253,242,240,0.88);
+  backdrop-filter:blur(24px);
+  -webkit-backdrop-filter:blur(24px);
+  border-bottom:1px solid var(--border);
+  padding:14px 0;
+}
+.nav-inner { display:flex; justify-content:space-between; align-items:center; }
+.nav-logo {
+  font-family:'Unbounded',sans-serif;
+  font-size:15px; font-weight:700;
+  color:var(--cream);
+  letter-spacing:-0.3px;
+}
+.nav-logo span { color:var(--camel); }
+.nav-btn {
+  background:var(--rose);
+  color:white; border:none;
+  padding:10px 26px; border-radius:50px;
+  font-family:'Manrope',sans-serif;
+  font-size:13px; font-weight:700;
+  cursor:pointer; transition:all .3s;
+  letter-spacing:.3px;
+}
+.nav-btn:hover { background:#C03568; transform:translateY(-1px); }
+
+/* ===== HERO ===== */
+.hero {
+  padding:160px 0 80px;
+  position:relative;
+  overflow:hidden;
+}
+.hero-glow {
+  position:absolute; top:-200px; right:-100px;
+  width:600px; height:600px;
+  background:radial-gradient(circle, rgba(212,70,122,0.06) 0%, transparent 70%);
+  pointer-events:none;
+}
+.hero-glow2 {
+  position:absolute; bottom:-150px; left:-80px;
+  width:400px; height:400px;
+  background:radial-gradient(circle, rgba(196,149,106,0.08) 0%, transparent 70%);
+  pointer-events:none;
+}
+
+/* Decorative stickers */
+.sticker {
+  position:absolute;
+  pointer-events:none;
+  z-index:2;
+}
+.sticker-star {
+  width:60px; height:60px;
+  top:130px; right:8%;
+  animation: spin 12s linear infinite;
+}
+.sticker-star svg { width:100%; height:100%; }
+.sticker-arrow {
+  bottom:20px; right:15%;
+  font-size:48px;
+  color:var(--rose);
+  animation: float 3s ease-in-out infinite;
+  transform-origin:center;
+}
+.sticker-sparkle {
+  top:50%; left:5%;
+  font-size:32px;
+  color:var(--camel);
+  animation: floatAlt 4s ease-in-out infinite;
+}
+
+.hero-badge {
+  display:inline-flex; align-items:center; gap:8px;
+  background:var(--bg-card);
+  border:1px solid var(--border);
+  padding:8px 20px; border-radius:50px;
+  font-size:13px; font-weight:600;
+  color:var(--gray);
+  margin-bottom:32px;
+  animation:fadeIn .6s ease forwards;
+}
+.hero-badge-dot {
+  width:8px; height:8px;
+  background:var(--rose);
+  border-radius:50%;
+  animation:pulse 2s infinite;
+}
+
+.hero h1 {
+  font-family:'Playfair Display',serif;
+  font-size:clamp(40px,6.5vw,76px);
+  font-weight:900;
+  line-height:1.05;
+  color:var(--cream);
+  margin-bottom:28px;
+  max-width:820px;
+  animation:fadeUp .8s ease forwards;
+  letter-spacing:-1.5px;
+}
+.hero h1 em {
+  font-style:italic;
+  color:var(--camel);
+  position:relative;
+}
+.hero h1 em::after {
+  content:'';
+  position:absolute;
+  bottom:4px; left:0; right:0;
+  height:3px;
+  background:var(--camel);
+  opacity:.4;
+  border-radius:2px;
+}
+.hero-sub {
+  font-size:17px; line-height:1.75;
+  color:var(--gray);
+  max-width:540px;
+  margin-bottom:40px;
+  animation:fadeUp .8s ease .2s forwards;
+  opacity:0;
+}
+.hero-sub strong { color:var(--cream); font-weight:600; }
+
+.hero-tags {
+  display:flex; flex-wrap:wrap; gap:10px;
+  margin-bottom:40px;
+  animation:fadeUp .8s ease .3s forwards;
+  opacity:0;
+}
+.hero-tag {
+  background:var(--bg-card);
+  border:1px solid var(--border);
+  padding:10px 18px; border-radius:12px;
+  font-size:13px; font-weight:600;
+  color:var(--camel-dark);
+  display:flex; align-items:center; gap:8px;
+}
+.hero-tag span { font-size:15px; }
+
+.hero-actions {
+  display:flex; align-items:center; gap:24px;
+  flex-wrap:wrap;
+  animation:fadeUp .8s ease .4s forwards;
+  opacity:0;
+}
+.btn-main {
+  display:inline-flex; align-items:center; gap:10px;
+  background:var(--rose);
+  color:white; border:none;
+  padding:20px 44px; border-radius:60px;
+  font-family:'Manrope',sans-serif;
+  font-size:17px; font-weight:700;
+  cursor:pointer; transition:all .3s;
+  letter-spacing:.3px;
+  text-decoration:none;
+  position:relative;
+  overflow:hidden;
+}
+.btn-main::after {
+  content:''; position:absolute;
+  top:0; left:0; right:0; bottom:0;
+  background:linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+  background-size:200% 100%;
+  animation:shimmer 3s infinite;
+}
+.btn-main:hover {
+  background:#C03568;
+  transform:translateY(-3px);
+  box-shadow:0 16px 50px rgba(212,70,122,0.3);
+}
+.hero-price {
+  font-size:14px; color:var(--gray-dark);
+}
+.hero-price strong {
+  color:var(--cream); font-weight:800; font-size:24px;
+  font-family:'Unbounded',sans-serif;
+}
+
+/* ===== MARQUEE ===== */
+.marquee-wrap {
+  padding:24px 0;
+  border-top:1px solid var(--border);
+  border-bottom:1px solid var(--border);
+  overflow:hidden;
+  position:relative;
+}
+.marquee-track {
+  display:flex;
+  width:max-content;
+  animation:marquee 25s linear infinite;
+}
+.marquee-item {
+  font-family:'Unbounded',sans-serif;
+  font-size:14px;
+  font-weight:700;
+  text-transform:uppercase;
+  letter-spacing:3px;
+  color:var(--gray-dark);
+  white-space:nowrap;
+  padding:0 40px;
+  display:flex; align-items:center; gap:16px;
+}
+.marquee-item .dot {
+  width:6px; height:6px;
+  background:var(--camel);
+  border-radius:50%;
+  flex-shrink:0;
+}
+.marquee-item.accent { color:var(--camel); }
+
+/* ===== PAIN ===== */
+.pain {
+  padding:90px 0;
+}
+.section-label {
+  font-family:'Unbounded',sans-serif;
+  font-size:11px; font-weight:700;
+  text-transform:uppercase;
+  letter-spacing:3px;
+  color:var(--camel);
+  margin-bottom:18px;
+  display:block;
+}
+.section-title {
+  font-family:'Playfair Display',serif;
+  font-size:clamp(30px,4.5vw,50px);
+  font-weight:900;
+  line-height:1.12;
+  color:var(--cream);
+  margin-bottom:50px;
+  letter-spacing:-0.8px;
+}
+.section-title em { font-style:italic; color:var(--camel); }
+
+.pain-grid {
+  display:grid;
+  grid-template-columns:repeat(auto-fit, minmax(280px,1fr));
+  gap:14px;
+}
+.pain-item {
+  display:flex; align-items:flex-start; gap:14px;
+  padding:22px;
+  background:var(--bg-card);
+  border:1px solid var(--border);
+  border-radius:16px;
+  transition:all .3s;
+}
+.pain-item:hover {
+  border-color:var(--camel-light);
+  background:var(--bg-card-hover);
+  transform:translateY(-2px);
+  box-shadow:0 8px 30px rgba(166,122,82,0.06);
+}
+.pain-num {
+  font-family:'Unbounded',sans-serif;
+  font-size:11px; font-weight:800;
+  color:var(--rose);
+  min-width:24px;
+  padding-top:2px;
+}
+.pain-text {
+  font-size:15px; line-height:1.55;
+  color:var(--gray);
+}
+
+/* ===== AUDIENCE ===== */
+.audience { padding:40px 0 90px; }
+.audience-grid {
+  display:grid;
+  grid-template-columns:repeat(auto-fit, minmax(300px,1fr));
+  gap:20px;
+}
+.audience-card {
+  background:var(--bg-card);
+  border:1px solid var(--border);
+  border-radius:24px;
+  padding:36px 30px;
+  transition:all .4s;
+  position:relative;
+  overflow:hidden;
+}
+.audience-card::before {
+  content:'';
+  position:absolute; top:0; left:0; right:0; height:2px;
+  background:linear-gradient(90deg, var(--camel), var(--rose));
+  opacity:0; transition:opacity .3s;
+}
+.audience-card:hover {
+  border-color:var(--camel-light);
+  transform:translateY(-4px);
+  box-shadow:0 24px 60px rgba(166,122,82,0.1);
+}
+.audience-card:hover::before { opacity:1; }
+.audience-emoji { font-size:40px; margin-bottom:18px; display:block; }
+.audience-card h3 {
+  font-family:'Playfair Display',serif;
+  font-size:24px; font-weight:700;
+  margin-bottom:14px; color:var(--cream);
+  font-style:italic;
+}
+.audience-card p {
+  font-size:14.5px; line-height:1.7;
+  color:var(--gray);
+}
+
+/* ===== PROGRAM ===== */
+.program {
+  padding:90px 0;
+  border-top:1px solid var(--border);
+}
+.program-days { display:flex; flex-direction:column; gap:20px; }
+.day-card {
+  background:var(--bg-card);
+  border:1px solid var(--border);
+  border-radius:24px;
+  padding:40px 36px;
+  position:relative;
+  overflow:hidden;
+  transition:all .4s;
+}
+.day-card:hover {
+  border-color:var(--camel-light);
+  box-shadow:0 20px 60px rgba(166,122,82,0.08);
+}
+.day-header {
+  display:flex; align-items:flex-start; gap:24px;
+  margin-bottom:20px;
+}
+.day-num {
+  font-family:'Unbounded',sans-serif;
+  font-size:56px; font-weight:900;
+  line-height:1;
+  background:linear-gradient(135deg, var(--camel), var(--rose));
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+  background-clip:text;
+  min-width:70px;
+}
+.day-tag {
+  font-family:'Unbounded',sans-serif;
+  font-size:10px; font-weight:700;
+  text-transform:uppercase;
+  letter-spacing:2.5px;
+  color:var(--rose);
+  margin-bottom:8px;
+  display:block;
+}
+.day-title {
+  font-family:'Playfair Display',serif;
+  font-size:28px; font-weight:700;
+  color:var(--cream);
+  margin-bottom:14px;
+  line-height:1.2;
+  font-style:italic;
+}
+.day-desc {
+  font-size:15px; line-height:1.7;
+  color:var(--gray);
+  max-width:600px;
+  margin-bottom:20px;
+}
+.day-result {
+  display:inline-flex; align-items:center; gap:10px;
+  background:rgba(196,149,106,0.08);
+  border:1px solid rgba(196,149,106,0.15);
+  padding:12px 20px;
+  border-radius:12px;
+  font-size:13px; font-weight:600;
+  color:var(--camel-dark);
+}
+
+/* ===== MARQUEE 2 ===== */
+.marquee-wrap2 {
+  padding:20px 0;
+  border-top:1px solid var(--border);
+  border-bottom:1px solid var(--border);
+  overflow:hidden;
+}
+.marquee-track2 {
+  display:flex;
+  width:max-content;
+  animation:marquee 20s linear infinite;
+}
+
+/* ===== COMPARE ===== */
+.compare { padding:90px 0; }
+.compare-table { max-width:680px; margin:0 auto; }
+.compare-row {
+  display:flex; justify-content:space-between; align-items:center;
+  padding:20px 0;
+  border-bottom:1px solid var(--border);
+  transition:all .3s;
+}
+.compare-row:hover { padding-left:12px; }
+.compare-row:last-child { border-bottom:none; }
+.compare-row.hl {
+  background:linear-gradient(135deg, rgba(212,70,122,0.06), rgba(196,149,106,0.06));
+  border:1px solid var(--camel-light);
+  border-radius:16px;
+  padding:24px;
+  margin-top:12px;
+}
+.compare-item { font-size:15px; color:var(--gray); }
+.compare-row.hl .compare-item {
+  color:var(--cream); font-weight:700; font-size:16px;
+}
+.compare-price {
+  font-size:15px; font-weight:600;
+  color:var(--gray-dark); white-space:nowrap;
+}
+.compare-row.hl .compare-price {
+  font-family:'Unbounded',sans-serif;
+  color:var(--rose); font-size:22px; font-weight:800;
+}
+
+/* ===== EXPERT ===== */
+.expert {
+  padding:90px 0;
+  border-top:1px solid var(--border);
+}
+.expert-inner {
+  display:grid;
+  grid-template-columns:300px 1fr;
+  gap:50px;
+  align-items:start;
+}
+.expert-photo { position:relative; }
+.expert-photo-img {
+  width:100%;
+  aspect-ratio:3/4;
+  object-fit:cover;
+  border-radius:24px;
+  background:linear-gradient(135deg, #F3D5CF, #F9E8E4);
+  display:flex; align-items:center; justify-content:center;
+  border:1px solid var(--border);
+  font-size:14px; color:var(--gray);
+}
+.expert-accent {
+  position:absolute;
+  bottom:-14px; right:-14px;
+  width:80px; height:80px;
+  border-radius:20px;
+  background:linear-gradient(135deg, var(--camel), var(--rose));
+  z-index:-1;
+  animation:wiggle 4s ease-in-out infinite;
+}
+.expert-sticker {
+  position:absolute;
+  top:-16px; left:-16px;
+  width:56px; height:56px;
+  background:var(--rose);
+  border-radius:50%;
+  display:flex; align-items:center; justify-content:center;
+  font-size:24px;
+  animation:float 3s ease-in-out infinite;
+  box-shadow:0 8px 30px rgba(212,70,122,0.2);
+}
+
+.expert-content h3 {
+  font-family:'Playfair Display',serif;
+  font-size:40px; font-weight:900;
+  color:var(--cream);
+  margin-bottom:6px;
+}
+.expert-role {
+  font-family:'Unbounded',sans-serif;
+  font-size:11px; font-weight:700;
+  text-transform:uppercase;
+  letter-spacing:2.5px;
+  color:var(--camel);
+  margin-bottom:28px;
+}
+.expert-text {
+  font-size:16px; line-height:1.8;
+  color:var(--gray);
+  margin-bottom:16px;
+}
+.expert-text strong { color:var(--cream); font-weight:600; }
+.expert-quote {
+  border-left:3px solid var(--rose);
+  padding-left:20px;
+  margin:28px 0;
+  font-family:'Playfair Display',serif;
+  font-size:20px;
+  font-style:italic;
+  line-height:1.5;
+  color:var(--rose);
+}
+.expert-stats {
+  display:flex; gap:32px;
+  margin-top:30px;
+  padding-top:28px;
+  border-top:1px solid var(--border);
+}
+.expert-stat-num {
+  font-family:'Unbounded',sans-serif;
+  font-size:32px; font-weight:800;
+  background:linear-gradient(135deg, var(--camel), var(--rose));
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+  background-clip:text;
+  line-height:1; margin-bottom:6px;
+}
+.expert-stat-label {
+  font-size:12px; color:var(--gray-dark);
+  font-weight:600;
+}
+.expert-ig {
+  display:inline-flex; align-items:center; gap:8px;
+  margin-top:24px;
+  padding:12px 22px;
+  background:rgba(196,149,106,0.08);
+  border:1px solid var(--border);
+  border-radius:50px;
+  font-size:14px; font-weight:600;
+  color:var(--camel-dark);
+  text-decoration:none;
+  transition:all .3s;
+}
+.expert-ig:hover { border-color:var(--camel); background:rgba(196,149,106,0.12); }
+
+/* ===== RESULTS ===== */
+.results { padding:90px 0; border-top:1px solid var(--border); }
+.results-grid {
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:14px;
+}
+.result-item {
+  display:flex; align-items:flex-start; gap:14px;
+  padding:20px;
+  background:var(--bg-card);
+  border:1px solid var(--border);
+  border-radius:16px;
+  transition:all .3s;
+}
+.result-item:hover {
+  border-color:var(--camel-light);
+  transform:translateY(-2px);
+  box-shadow:0 8px 30px rgba(166,122,82,0.06);
+}
+.result-icon {
+  width:38px; height:38px; min-width:38px;
+  background:rgba(212,70,122,0.08);
+  border:1px solid rgba(212,70,122,0.1);
+  border-radius:10px;
+  display:flex; align-items:center; justify-content:center;
+  font-size:16px;
+}
+.result-text { font-size:14px; line-height:1.55; color:var(--gray); font-weight:500; }
+
+.bonuses-label {
+  margin-top:44px; margin-bottom:20px;
+  font-family:'Unbounded',sans-serif;
+  font-size:11px; font-weight:700;
+  text-transform:uppercase;
+  letter-spacing:3px;
+  color:var(--rose);
+}
+.bonuses-grid {
+  display:grid;
+  grid-template-columns:repeat(auto-fit, minmax(220px,1fr));
+  gap:12px;
+}
+.bonus-item {
+  padding:16px 20px;
+  background:rgba(212,70,122,0.05);
+  border:1px dashed rgba(212,70,122,0.25);
+  border-radius:14px;
+  font-size:13px; color:var(--gray-dark);
+  font-weight:500;
+  display:flex; align-items:center; gap:10px;
+}
+
+/* ===== FAQ ===== */
+.faq { padding:90px 0; border-top:1px solid var(--border); }
+.faq-list { max-width:720px; margin:0 auto; }
+.faq-item {
+  border-bottom:1px solid var(--border);
+  padding:24px 0;
+  cursor:pointer;
+}
+.faq-q {
+  display:flex; justify-content:space-between;
+  align-items:center; gap:16px;
+}
+.faq-q h4 {
+  font-family:'Playfair Display',serif;
+  font-size:22px; font-weight:700;
+  color:var(--cream);
+  font-style:italic;
+  transition:color .3s;
+}
+.faq-item:hover .faq-q h4 { color:var(--camel); }
+.faq-toggle {
+  width:36px; height:36px; min-width:36px;
+  background:rgba(212,70,122,0.06);
+  border:1px solid rgba(212,70,122,0.12);
+  border-radius:50%;
+  display:flex; align-items:center; justify-content:center;
+  font-size:20px; font-weight:300;
+  color:var(--rose);
+  transition:all .3s;
+}
+.faq-item.active .faq-toggle {
+  background:var(--rose);
+  color:white;
+  border-color:var(--rose);
+  transform:rotate(45deg);
+}
+.faq-a {
+  max-height:0; overflow:hidden;
+  transition:max-height .4s ease, padding .3s ease;
+}
+.faq-item.active .faq-a { max-height:300px; padding-top:16px; }
+.faq-a p { font-size:15px; line-height:1.7; color:var(--gray); }
+
+/* ===== FINAL CTA ===== */
+.final {
+  padding:120px 0;
+  text-align:center;
+  position:relative;
+  overflow:hidden;
+}
+.final-glow {
+  position:absolute; top:50%; left:50%;
+  transform:translate(-50%,-50%);
+  width:500px; height:500px;
+  background:radial-gradient(circle, rgba(212,70,122,0.06) 0%, transparent 70%);
+  pointer-events:none;
+}
+.final-star {
+  position:absolute;
+  top:20%; right:10%;
+  width:50px; height:50px;
+  animation:spin 15s linear infinite;
+  opacity:.5;
+}
+.final-quote {
+  font-family:'Playfair Display',serif;
+  font-size:clamp(28px,4.5vw,48px);
+  font-weight:900;
+  line-height:1.15;
+  color:var(--cream);
+  max-width:700px;
+  margin:0 auto 20px;
+  letter-spacing:-.5px;
+}
+.final-quote em { font-style:italic; color:var(--camel); }
+.final-sub {
+  font-size:16px; color:var(--gray);
+  max-width:480px;
+  margin:0 auto 44px;
+  line-height:1.7;
+}
+.final-tags {
+  display:flex; justify-content:center;
+  flex-wrap:wrap; gap:10px;
+  margin-bottom:36px;
+}
+.final-tag {
+  background:var(--bg-card);
+  border:1px solid var(--border);
+  padding:10px 20px; border-radius:50px;
+  font-size:13px; font-weight:600;
+  color:var(--gray);
+}
+.final-note {
+  font-size:13px; color:var(--gray-dark);
+  margin-top:24px;
+  max-width:460px;
+  margin-left:auto; margin-right:auto;
+  line-height:1.6;
+}
+
+/* ===== FOOTER ===== */
+.footer {
+  padding:28px 0;
+  border-top:1px solid var(--border);
+  text-align:center;
+}
+.footer p { font-size:12px; color:var(--gray-dark); }
+.footer a { color:var(--camel); text-decoration:none; }
+
+/* ===== RESPONSIVE ===== */
+@media(max-width:768px) {
+  .hero { padding:130px 0 60px; }
+  .expert-inner { grid-template-columns:1fr; gap:30px; }
+  .expert-photo { max-width:240px; }
+  .results-grid { grid-template-columns:1fr; }
+  .day-card { padding:28px 22px; }
+  .day-num { font-size:40px; min-width:50px; }
+  .day-title { font-size:22px; }
+  .audience-grid { grid-template-columns:1fr; }
+  .sticker-star { display:none; }
+  .sticker-arrow { display:none; }
+  .expert-stats { gap:20px; flex-wrap:wrap; }
+  .hero-tags { gap:8px; }
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="nav">
+  <div class="container nav-inner">
+    <div class="nav-logo">салон <span>на цифрах</span></div>
+    <button class="nav-btn" onclick="document.getElementById('cta').scrollIntoView({behavior:'smooth'})">забрати місце — $5</button>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-glow"></div>
+  <div class="hero-glow2"></div>
+
+  <!-- Decorative stickers -->
+  <div class="sticker sticker-star">
+    <svg viewBox="0 0 60 60" fill="none"><path d="M30 0L36.18 23.82L60 30L36.18 36.18L30 60L23.82 36.18L0 30L23.82 23.82L30 0Z" fill="rgba(212,70,122,0.15)"/></svg>
+  </div>
+  <div class="sticker sticker-arrow">↗</div>
+  <div class="sticker sticker-sparkle">✦</div>
+
+  <div class="container">
+    <div class="hero-badge">
+      <span class="hero-badge-dot"></span>
+      онлайн-практикум · zoom · 3 дні
+    </div>
+    <h1>Де ваш салон <em>втрачає гроші</em> — і як це зупинити за 3 дні</h1>
+    <p class="hero-sub"><strong>Не лекції. Не мотивація.</strong> Ви приходите зі своїми цифрами — знаходите дірки у фінансах, рахуєте реальний прибуток і виходите з планом дій на 14 днів.</p>
+    <div class="hero-tags">
+      <div class="hero-tag"><span>📅</span> 3 дні по ~2 години</div>
+      <div class="hero-tag"><span>💻</span> Zoom, прямий ефір</div>
+      <div class="hero-tag"><span>📋</span> Шаблони + ДЗ</div>
+      <div class="hero-tag"><span>🎯</span> Практика, не теорія</div>
+    </div>
+    <div class="hero-actions">
+      <a href="#cta" class="btn-main">забрати місце за $5 →</a>
+      <div class="hero-price"><strong>$5</strong> — вартість одного капучіно</div>
+    </div>
+  </div>
+</section>
+
+<!-- MARQUEE -->
+<div class="marquee-wrap">
+  <div class="marquee-track">
+    <div class="marquee-item"><span class="dot"></span> ЯСНІСТЬ</div>
+    <div class="marquee-item accent"><span class="dot"></span> ЦИФРИ</div>
+    <div class="marquee-item"><span class="dot"></span> ВПРОВАДЖЕННЯ</div>
+    <div class="marquee-item accent"><span class="dot"></span> P&L</div>
+    <div class="marquee-item"><span class="dot"></span> МАРЖА</div>
+    <div class="marquee-item accent"><span class="dot"></span> КОНТРОЛЬ</div>
+    <div class="marquee-item"><span class="dot"></span> ПЛАН 14 ДНІВ</div>
+    <div class="marquee-item accent"><span class="dot"></span> СИСТЕМА</div>
+    <div class="marquee-item"><span class="dot"></span> ЯСНІСТЬ</div>
+    <div class="marquee-item accent"><span class="dot"></span> ЦИФРИ</div>
+    <div class="marquee-item"><span class="dot"></span> ВПРОВАДЖЕННЯ</div>
+    <div class="marquee-item accent"><span class="dot"></span> P&L</div>
+    <div class="marquee-item"><span class="dot"></span> МАРЖА</div>
+    <div class="marquee-item accent"><span class="dot"></span> КОНТРОЛЬ</div>
+    <div class="marquee-item"><span class="dot"></span> ПЛАН 14 ДНІВ</div>
+    <div class="marquee-item accent"><span class="dot"></span> СИСТЕМА</div>
+  </div>
+</div>
+
+<!-- PAIN -->
+<section class="pain">
+  <div class="container">
+    <span class="section-label">впізнай себе</span>
+    <h2 class="section-title">це точно метч,<br>якщо <em>хоча б 3 пункти</em> про тебе</h2>
+    <div class="pain-grid">
+      <div class="pain-item anim"><span class="pain-num">01</span><span class="pain-text">Працюєш більше, ніж рік тому, а заробляєш так само або менше</span></div>
+      <div class="pain-item anim"><span class="pain-num">02</span><span class="pain-text">Повний запис є, а грошей в кінці місяця — немає</span></div>
+      <div class="pain-item anim"><span class="pain-num">03</span><span class="pain-text">Не знаєш свій реальний прибуток — тільки оборот</span></div>
+      <div class="pain-item anim"><span class="pain-num">04</span><span class="pain-text">Ти і в кріслі, і адмін, і закупки, і Instagram — все сама</span></div>
+      <div class="pain-item anim"><span class="pain-num">05</span><span class="pain-text">Проходила курси, але нічого не впровадила</span></div>
+      <div class="pain-item anim"><span class="pain-num">06</span><span class="pain-text">Відчуваєш, що щось не так, але не знаєш з чого почати</span></div>
+      <div class="pain-item anim"><span class="pain-num">07</span><span class="pain-text">Є команда, але все тримається тільки на тобі</span></div>
+      <div class="pain-item anim"><span class="pain-num">08</span><span class="pain-text">Боїшся порахувати — бо підозрюєш, що результат не порадує</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- AUDIENCE -->
+<section class="audience">
+  <div class="container">
+    <span class="section-label">для кого</span>
+    <h2 class="section-title">три типи учасників</h2>
+    <div class="audience-grid">
+      <div class="audience-card anim">
+        <span class="audience-emoji">💅</span>
+        <h3>«Я сама і швець, і жнець»</h3>
+        <p>Ти — майстриня з власним кабінетом. Працюєш на себе, все тримаєш в голові. На практикумі ти вперше порахуєш реальні цифри і зрозумієш, чи твій кабінет — це бізнес, чи самозайнятість з ілюзією доходу.</p>
+      </div>
+      <div class="audience-card anim anim-d1">
+        <span class="audience-emoji">✨</span>
+        <h3>«Взяла майстрів — і стало важче»</h3>
+        <p>Ти — майстриня-власниця студії на 2–3 людини. Більше витрат, більше хаосу, і ти досі в кріслі. На практикумі побачиш, де зʼїдається маржа, і що контролювати в першу чергу.</p>
+      </div>
+      <div class="audience-card anim anim-d2">
+        <span class="audience-emoji">🏛️</span>
+        <h3>«Є салон, немає системи»</h3>
+        <p>У тебе 4–6 майстрів, може є адмін. Але управління — це «гасіння пожеж». На практикумі зберете скелет P&L, побачиш фінансову картину і отримаєш мінімальну систему контролю.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PROGRAM -->
+<section class="program">
+  <div class="container">
+    <span class="section-label">програма</span>
+    <h2 class="section-title">3 дні — 3 результати</h2>
+    <div class="program-days">
+      <div class="day-card anim">
+        <div class="day-header">
+          <div class="day-num">01</div>
+          <div>
+            <span class="day-tag">ясність</span>
+            <h3 class="day-title">«Де дірка, там і гроші»</h3>
+          </div>
+        </div>
+        <p class="day-desc">Системний аудит по 4 зонах салону: фінанси, запис, сервіс, команда. Знаходиш 1–2 ключові дірки і обираєш 3 пріоритети, які дадуть ефект за 14 днів. Замість хаосу — чітка карта: ось тут болить, ось тут чинимо.</p>
+        <div class="day-result">📍 Результат: «Я зрозуміла, де в мене діра і що робити першим»</div>
+      </div>
+      <div class="day-card anim">
+        <div class="day-header">
+          <div class="day-num">02</div>
+          <div>
+            <span class="day-tag">цифри</span>
+            <h3 class="day-title">«Прибутковий — чи просто крутиш оборот?»</h3>
+          </div>
+        </div>
+        <p class="day-desc">Заповнюєш скелет P&L зі своїми цифрами в прямому ефірі. Рахуєш точку беззбитковості. Рахуєш маржу по ТОП-3 послугах. Бачиш, яка послуга реально дає гроші, а яка тільки займає час.</p>
+        <div class="day-result">📊 Результат: «Я бачу свій реальний прибуток і де втрачаю»</div>
+      </div>
+      <div class="day-card anim">
+        <div class="day-header">
+          <div class="day-num">03</div>
+          <div>
+            <span class="day-tag">впровадження</span>
+            <h3 class="day-title">«План на 14 днів: що робити в понеділок»</h3>
+          </div>
+        </div>
+        <p class="day-desc">Збираєш план дій: 1 метрика, 3 дії, дати, відповідальний. Мінімальна система контролю для салону без перевантаження — 15–20 хвилин на тиждень. KPI для адміна або відповідального.</p>
+        <div class="day-result">🚀 Результат: «У мене є план з датами і я знаю, що далі»</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- MARQUEE 2 -->
+<div class="marquee-wrap2">
+  <div class="marquee-track2">
+    <div class="marquee-item">ЧАС РАХУВАТИ</div>
+    <div class="marquee-item accent">✦</div>
+    <div class="marquee-item">ЧАС РАХУВАТИ</div>
+    <div class="marquee-item accent">✦</div>
+    <div class="marquee-item">ЧАС РАХУВАТИ</div>
+    <div class="marquee-item accent">✦</div>
+    <div class="marquee-item">ЧАС РАХУВАТИ</div>
+    <div class="marquee-item accent">✦</div>
+    <div class="marquee-item">ЧАС РАХУВАТИ</div>
+    <div class="marquee-item accent">✦</div>
+    <div class="marquee-item">ЧАС РАХУВАТИ</div>
+    <div class="marquee-item accent">✦</div>
+    <div class="marquee-item">ЧАС РАХУВАТИ</div>
+    <div class="marquee-item accent">✦</div>
+    <div class="marquee-item">ЧАС РАХУВАТИ</div>
+    <div class="marquee-item accent">✦</div>
+  </div>
+</div>
+
+<!-- COMPARE -->
+<section class="compare">
+  <div class="container">
+    <span class="section-label">перспектива</span>
+    <h2 class="section-title">$5 за практикум.<br><em>давай порівняємо</em></h2>
+    <div class="compare-table">
+      <div class="compare-row anim"><span class="compare-item">☕ Капучіно в кав'ярні</span><span class="compare-price">$4–5</span></div>
+      <div class="compare-row anim anim-d1"><span class="compare-item">📱 Пост у таргеті, який не спрацював</span><span class="compare-price">$5–15</span></div>
+      <div class="compare-row anim anim-d2"><span class="compare-item">🧴 Матеріал, списаний через прострочку</span><span class="compare-price">$10–30</span></div>
+      <div class="compare-row anim anim-d3"><span class="compare-item">💸 Знижка клієнту «просто так»</span><span class="compare-price">$15–50</span></div>
+      <div class="compare-row hl anim anim-d4"><span class="compare-item">✦ Практикум «Салон на цифрах»</span><span class="compare-price">$5</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- EXPERT -->
+<section class="expert">
+  <div class="container">
+    <span class="section-label">спікер</span>
+    <h2 class="section-title" style="margin-bottom:44px;">хто веде практикум</h2>
+    <div class="expert-inner">
+      <div class="expert-photo">
+        <div class="expert-photo-img">фото Свєти</div>
+        <div class="expert-accent"></div>
+        <div class="expert-sticker">🔥</div>
+      </div>
+      <div class="expert-content">
+        <h3>Свєта Герасевич</h3>
+        <div class="expert-role">б'юті-коуч · система масштабування</div>
+        <p class="expert-text"><strong>Я не теоретик, який розказує «як має бути».</strong> Я знаю, де гроші в б'юті — бо розібрала на цифри десятки салонів і студій.</p>
+        <p class="expert-text">Я бачила сотні власників, які працюють по 10–12 годин, мають повний запис — і не розуміють, чому грошей немає. Проблема майже завжди одна: <strong>немає системи, немає цифр, немає контролю.</strong></p>
+        <div class="expert-quote">«На цьому практикумі я не буду вас мотивувати. Ви прийдете зі своїми цифрами — а я проведу вас крок за кроком.»</div>
+        <div class="expert-stats">
+          <div><div class="expert-stat-num">18K+</div><div class="expert-stat-label">Спільнота</div></div>
+          <div><div class="expert-stat-num">100+</div><div class="expert-stat-label">Розборів салонів</div></div>
+          <div><div class="expert-stat-num">360</div><div class="expert-stat-label">Публікацій</div></div>
+        </div>
+        <a href="https://instagram.com/sveta_gerasevich" class="expert-ig" target="_blank">📸 @sveta_gerasevich</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- RESULTS -->
+<section class="results">
+  <div class="container">
+    <span class="section-label">результати</span>
+    <h2 class="section-title">що у тебе буде <em>після 3 днів</em></h2>
+    <div class="results-grid">
+      <div class="result-item anim"><div class="result-icon">📋</div><span class="result-text">Заповнена діагностика салону по 4 зонах</span></div>
+      <div class="result-item anim"><div class="result-icon">🎯</div><span class="result-text">Карта слабких місць і 3 пріоритети</span></div>
+      <div class="result-item anim"><div class="result-icon">📊</div><span class="result-text">Скелет P&L з твоїми цифрами</span></div>
+      <div class="result-item anim"><div class="result-icon">📐</div><span class="result-text">Точка беззбитковості твого салону</span></div>
+      <div class="result-item anim"><div class="result-icon">💰</div><span class="result-text">Маржинальність ТОП-3 послуг</span></div>
+      <div class="result-item anim"><div class="result-icon">📅</div><span class="result-text">План дій на 14 днів з метриками</span></div>
+      <div class="result-item anim"><div class="result-icon">⚙️</div><span class="result-text">Мінімальна система контролю</span></div>
+      <div class="result-item anim"><div class="result-icon">👤</div><span class="result-text">KPI адміна або відповідального</span></div>
+    </div>
+    <div class="bonuses-label">🎁 бонуси для тих, хто здає ДЗ</div>
+    <div class="bonuses-grid">
+      <div class="bonus-item anim">📝 Шаблон правил відміни та передоплати</div>
+      <div class="bonus-item anim">💬 Скрипт підтвердження запису</div>
+      <div class="bonus-item anim">🔄 Скрипт повернення клієнта</div>
+      <div class="bonus-item anim">📈 KPI адміна на тиждень</div>
+    </div>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section class="faq">
+  <div class="container">
+    <span class="section-label">питання</span>
+    <h2 class="section-title">те, що ти зараз <em>думаєш</em></h2>
+    <div class="faq-list">
+      <div class="faq-item" onclick="toggleFaq(this)">
+        <div class="faq-q"><h4>«У мене немає часу на 3 дні»</h4><div class="faq-toggle">+</div></div>
+        <div class="faq-a"><p>2 години на день. Менше, ніж один клієнт. Але ці 2 години можуть показати тобі, чому решта 10 годин у кріслі не приносять того прибутку, який мали б.</p></div>
+      </div>
+      <div class="faq-item" onclick="toggleFaq(this)">
+        <div class="faq-q"><h4>«Я не дружу з цифрами»</h4><div class="faq-toggle">+</div></div>
+        <div class="faq-a"><p>Саме тому ти тут. Ми не робимо бухгалтерію. Ми заповнюємо просту таблицю разом, крок за кроком, у прямому ефірі. Якщо ти вмієш записати, скільки платиш за оренду — ти впораєшся.</p></div>
+      </div>
+      <div class="faq-item" onclick="toggleFaq(this)">
+        <div class="faq-q"><h4>«Я вже проходила купу курсів»</h4><div class="faq-toggle">+</div></div>
+        <div class="faq-a"><p>Це не курс. Тут немає «уроків». Є твої цифри, твої дірки і твій план. Якщо після курсів нічого не змінилось — проблема була не в знаннях, а у впровадженні.</p></div>
+      </div>
+      <div class="faq-item" onclick="toggleFaq(this)">
+        <div class="faq-q"><h4>«$5 — в чому підвох?»</h4><div class="faq-toggle">+</div></div>
+        <div class="faq-a"><p>Підвоха немає. $5 — це фільтр, щоб прийшли ті, хто готовий працювати. Після практикуму є можливість персональної консультації — але це за бажанням і окремий формат.</p></div>
+      </div>
+      <div class="faq-item" onclick="toggleFaq(this)">
+        <div class="faq-q"><h4>«У мене тільки кабінет, я одна»</h4><div class="faq-toggle">+</div></div>
+        <div class="faq-a"><p>Навіть якщо ти одна — у тебе є фінанси, запис, клієнти і час. І скоріш за все, ти не рахуєш маржу, не знаєш точку беззбитковості і не розумієш, яка послуга реально вигідна.</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FINAL CTA -->
+<section class="final" id="cta">
+  <div class="final-glow"></div>
+  <div class="final-star">
+    <svg viewBox="0 0 60 60" fill="none"><path d="M30 0L36.18 23.82L60 30L36.18 36.18L30 60L23.82 36.18L0 30L23.82 23.82L30 0Z" fill="rgba(212,70,122,0.12)"/></svg>
+  </div>
+  <div class="container">
+    <p class="final-quote anim">Ти і так знаєш, що <em>щось не так.</em><br>Питання — скільки ще місяців<br>ти будеш це ігнорувати</p>
+    <p class="final-sub anim anim-d1">Кожен місяць без цифр — це місяць, коли ти не бачиш, де втрачаєш. Не «колись потім». Зараз. 3 дні. Твої цифри. Твій план.</p>
+    <div class="final-tags anim anim-d2">
+      <span class="final-tag">📅 3 дні по ~2 години</span>
+      <span class="final-tag">💻 Zoom, прямий ефір</span>
+      <span class="final-tag">📋 Шаблони + ДЗ</span>
+    </div>
+    <a href="#" class="btn-main anim anim-d3" style="margin:0 auto;">забрати місце за $5 →</a>
+    <p class="final-note anim anim-d4">Після оплати ти одразу потрапляєш в Telegram-групу і отримуєш завдання для підготовки</p>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="container">
+    <p>© 2026 Свєта Герасевич · <a href="https://instagram.com/sveta_gerasevich" target="_blank">@sveta_gerasevich</a></p>
+  </div>
+</footer>
+
+<script>
+function toggleFaq(item) {
+  const wasActive = item.classList.contains('active');
+  document.querySelectorAll('.faq-item').forEach(i => i.classList.remove('active'));
+  if (!wasActive) item.classList.add('active');
+}
+
+const obs = new IntersectionObserver((entries) => {
+  entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('vis'); });
+}, { threshold:0.1, rootMargin:'0px 0px -40px 0px' });
+document.querySelectorAll('.anim').forEach(el => obs.observe(el));
+</script>
+
+</body>
+</html>
